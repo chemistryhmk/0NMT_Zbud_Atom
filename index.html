@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квантовий Алхімік: Архітектор Валентності</title>
+    <!-- FIXED: Corrected clean URLs instead of markdown links -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfbfa; /* Pastel cream dyslexia-friendly background */
+            color: #1e293b;
+            letter-spacing: 0.01em;
+        }
+        .dyslexia-line {
+            line-height: 1.75;
+        }
+        .quantum-box {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quantum-box:hover {
+            transform: translateY(-2px);
+        }
+        /* Selection and target highlights */
+        .selected-source {
+            border-color: #4f46e5 !important;
+            background-color: #f0fdf4 !important;
+            box-shadow: 0 0 12px 2px rgba(79, 70, 229, 0.25);
+        }
+        @keyframes orbit-pulse {
+            0%, 100% { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 0 0px rgba(245, 158, 11, 0.2); }
+            50% { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 12px 4px rgba(245, 158, 11, 0.3); }
+        }
+        .pulse-target {
+            animation: orbit-pulse 1.2s infinite;
+            border-style: dashed !important;
+        }
+        @keyframes excite-flash {
+            0% { background-color: rgba(251, 191, 36, 0.8); transform: scale(1.05); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+        .flash-active {
+            animation: excite-flash 0.6s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 md:p-6 select-none">
+
+    <header class="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 border-b border-amber-100 pb-4 mb-4">
+        <div class="flex items-center gap-3">
+            <span class="text-4xl">🔮</span>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-amber-950 tracking-tight">Квантовий Алхімік</h1>
+                <p class="text-xs text-amber-800 font-bold uppercase tracking-wider">Лабораторія Моделювання Валентності та НМТ</p>
+            </div>
+        </div>
+        
+        <!-- Game Status Indicators -->
+        <div class="flex items-center gap-4 bg-white shadow-sm border border-amber-100 px-5 py-2.5 rounded-2xl">
+            <div class="text-center">
+                <span class="text-xs text-slate-400 font-bold block uppercase">Місія</span>
+                <span id="mission-indicator" class="text-sm font-extrabold text-slate-800">1 з 10</span>
+            </div>
+            <div class="h-8 w-px bg-slate-200"></div>
+            <div class="text-center">
+                <span class="text-xs text-slate-400 font-bold block uppercase">Кванти</span>
+                <span id="score-display" class="text-base font-black text-amber-600">0 ★</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch my-2">
+
+        <!-- Left Side: Quantum Builder and Workbench (7 cols) -->
+        <section class="lg:col-span-7 bg-white rounded-3xl shadow-xl border border-amber-100/50 p-6 flex flex-col justify-between relative overflow-hidden">
+            <div>
+                <!-- Mission Objective Card -->
+                <div id="mission-card" class="bg-amber-50/50 border border-amber-100 rounded-2xl p-4 mb-6">
+                    <span class="bg-amber-200 text-amber-950 text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase">Ціль місії</span>
+                    <h3 id="mission-title" class="text-base font-bold mt-2 text-slate-800">Завантаження місії...</h3>
+                    <p id="mission-desc" class="text-xs text-slate-600 mt-1 dyslexia-line">Опис місії...</p>
+                </div>
+
+                <!-- Element Info Banner & Electron Bucket -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div id="element-badge" class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-md shadow-indigo-100">C</div>
+                        <div>
+                            <h2 id="element-name" class="font-extrabold text-lg text-slate-800">Карбон (Carbon)</h2>
+                            <p id="element-conf" class="text-xs text-slate-400 font-bold">Склади формулу сам!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Reactive Electron Bucket -->
+                    <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-2xl px-4 py-2">
+                        <span class="text-xs font-bold text-indigo-950 uppercase">Кошик валентних e-:</span>
+                        <div id="electron-bucket" class="flex gap-1 items-center">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="orbital-workbench" class="space-y-6 bg-slate-50/50 border border-slate-100 p-6 rounded-2xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Квантовий Верстак (Зовнішній рівень)</h4>
+                        <button onclick="resetCurrentMission()" class="text-[10px] bg-slate-200 hover:bg-slate-300 font-bold text-slate-700 px-3 py-1 rounded-lg transition">Скинути рівень 🔄</button>
+                    </div>
+                    
+                    <!-- d-Orbitals (if active) -->
+                    <div id="d-level-row" class="hidden flex items-center justify-between">
+                        <span id="d-level-label" class="text-xs font-bold text-slate-500 w-16">3d-рівень</span>
+                        <div class="flex gap-1.5" id="d-orbitals-container">
+                            <!-- Generated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- p-Orbitals -->
+                    <div id="p-level-row" class="flex items-center justify-between">
+                        <span id="p-level-label" class="text-xs font-bold text-slate-500 w-16">2p-рівень</span>
+                        <div class="flex gap-1.5" id="p-orbitals-container">
+                            <!-- Generated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- s-Orbitals -->
+                    <div id="s-level-row" class="flex items-center justify-between">
+                        <span id="s-level-label" class="text-xs font-bold text-slate-500 w-16">2s-рівень</span>
+                        <div class="flex gap-1.5" id="s-orbitals-container">
+                            <!-- Generated via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Helper Tips -->
+            <div class="mt-6 flex items-start gap-3 bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl">
+                <span class="text-xl">⚡</span>
+                <p id="workbench-tip" class="text-xs font-semibold text-indigo-950 dyslexia-line">
+                    Клікай на комірки, щоб додавати електрони з кошика. Перший клік — стрілочка вгору, другий — пара, третій — очищення та повернення електронів у кошик.
+                </p>
+            </div>
+        </section>
+
+        <!-- Right Side: Molecular Reactor and Evaluation (5 cols) -->
+        <section class="lg:col-span-5 flex flex-col justify-between gap-6">
+            
+            <!-- Molecular Reactor Card -->
+            <div class="bg-white rounded-3xl shadow-xl border border-amber-100/50 p-6 flex-grow flex flex-col justify-between">
+                <div>
+                    <span class="bg-emerald-100 text-emerald-950 text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase tracking-wider">Молекулярний реактор</span>
+                    <h3 class="text-base font-black text-slate-800 mt-2">Синтез цільової молекули</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Будуй конфігурації для активації синтезу</p>
+                </div>
+
+                <!-- Synthesis Visualizer Area -->
+                <div id="reactor-core" class="my-6 bg-slate-900 rounded-2xl p-6 min-h-[180px] flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent)]"></div>
+                    
+                    <div id="molecule-graphic" class="flex items-center justify-center gap-4 z-10">
+                        <!-- Dynamic SVG or Molecule State Rendered Here -->
+                    </div>
+
+                    <div id="reactor-status-text" class="text-slate-400 text-xs font-bold mt-4 z-10 text-center uppercase tracking-wider">
+                        Очікування активації валентності...
+                    </div>
+                </div>
+
+                <!-- Dynamic Action Buttons controlled by JS State -->
+                <div id="action-buttons-container" class="flex gap-3">
+                    <!-- Dynamic button injected based on step -->
+                </div>
+            </div>
+
+            <!-- Conceptual Challenge Panel (NMT adaptation) -->
+            <div id="challenge-panel" class="hidden bg-white rounded-3xl shadow-xl border border-amber-100/50 p-6">
+                <span class="bg-violet-100 text-violet-950 text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase tracking-wider">Квантовий виклик НМТ</span>
+                <h4 id="challenge-question" class="text-xs md:text-sm font-extrabold text-slate-800 mt-2 dyslexia-line">Питання...</h4>
+                
+                <div id="challenge-options" class="grid grid-cols-1 gap-3 mt-4">
+                    <!-- Options injected dynamically -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Feedback Modal Overlay -->
+    <div id="global-feedback-modal" class="hidden fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-amber-100 max-w-md w-full p-6 text-center space-y-4">
+            <span id="modal-emoji" class="text-5xl block animate-bounce">🎉</span>
+            <h3 id="modal-title" class="text-xl font-black text-slate-800">Чудова робота!</h3>
+            <p id="modal-text" class="text-sm text-slate-600 leading-relaxed dyslexia-line">Пояснення сполуки...</p>
+            <button id="modal-next-btn" onclick="nextStep()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold py-3 rounded-2xl shadow-md hover:shadow-lg transition">
+                Далі ➡️
+            </button>
+        </div>
+    </div>
+
+    <footer class="w-full max-w-6xl mx-auto text-center text-[10px] text-slate-400 mt-4 border-t border-slate-100 pt-4">
+        Конструктор квантових переходів. Створено для активної підготовки до НМТ.
+    </footer>
+
+    <script>
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+            }
+            playSuccess() {
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.type = 'triangle';
+                const now = this.ctx.currentTime;
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                osc.frequency.setValueAtTime(783.99, now + 0.2);
+                osc.frequency.setValueAtTime(1046.50, now + 0.3);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
+            }
+            playError() {
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.type = 'sawtooth';
+                const now = this.ctx.currentTime;
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(120, now + 0.12);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+            playJump() {
+                this.init(); if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.type = 'sine';
+                const now = this.ctx.currentTime;
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            }
+        }
+        const sfx = new SoundEngine();
+
+        // 10 Comprehensive interactive challenges (Fully active sandbox style)
+        const missions = [
+            {
+                element: 'C',
+                name: 'Карбон (Carbon)',
+                conf: '2s? 2p?',
+                valenceElectrons: 4,
+                targetMolecule: 'CH4',
+                targetName: 'Метан (Вуглеводень)',
+                targetValence: 4,
+                hasExcitedState: true,
+                desc: 'Карбон в основному стані має лише 2 неспарених електрони (Валентність II). Побудуй спочатку його основний стан, а потім переведи у збуджений для отримання Валентності IV для метану.',
+                challenge: {
+                    q: 'Який ступінь окиснення Карбону в отриманому метані (CH4)?',
+                    options: [
+                        { text: '-4', isCorrect: true, exp: 'Влучно! Оскільки Карбон більш електронегативний за Гідроген, він притягує до себе 4 спільні пари.' },
+                        { text: '+4', isCorrect: false, exp: 'Ні. Гідроген має ступінь окиснення +1. Розрахуй суму так, щоб молекула була нейтральною.' },
+                        { text: '0', isCorrect: false, exp: 'Це складна молекула з різними неметалами, тому заряди зміщуються.' },
+                        { text: '-2', isCorrect: false, exp: 'Помилка розрахунку. На кожен Гідроген припадає +1, тому Карбон має -4.' }
+                    ]
+                }
+            },
+            {
+                element: 'Be',
+                name: 'Берилій (Beryllium)',
+                conf: '2s? 2p?',
+                valenceElectrons: 2,
+                targetMolecule: 'BeCl2',
+                targetName: 'Хлорид берилію',
+                targetValence: 2,
+                hasExcitedState: true,
+                desc: 'В основному стані у Берилію всі електрони спарені (Валентність 0). Побудуй основний стан (з 2 електронів), а потім збуди його для отримання Валентності II.',
+                challenge: {
+                    q: 'Які ступені окиснення виявляють Берилій та Хлор у сполуці BeCl2 відповідно?',
+                    options: [
+                        { text: 'Be: +2, Cl: -1', isCorrect: true, exp: 'Правильно! Хлор як сильніший неметал притягує електронні пари (-1). Берилій віддає 2 електрони, отримуючи заряд +2.' },
+                        { text: 'Be: -2, Cl: +1', isCorrect: false, exp: 'Ні. Метали у сполуках з неметалами ніколи не виявляють негативного ступеня окиснення.' },
+                        { text: 'Be: +2, Cl: +1', isCorrect: false, exp: 'Сума ступенів окиснення має дорівнювати 0 (Be + 2*Cl = 0).' },
+                        { text: 'Be: 0, Cl: 0', isCorrect: false, exp: 'Нуль буває лише у простих речовинах у вільному стані.' }
+                    ]
+                }
+            },
+            {
+                element: 'B',
+                name: 'Бор (Boron)',
+                conf: '2s? 2p?',
+                valenceElectrons: 3,
+                targetMolecule: 'BF3',
+                targetName: 'Бор трифторид',
+                targetValence: 3,
+                hasExcitedState: true,
+                desc: 'Для утворення BF3 Бор повинен мати Валентність III. Розподіли 3 валентні електрони в основному стані, а потім збуди його.',
+                challenge: {
+                    q: 'Укажіть ступінь окиснення Бору в отриманому BF3:',
+                    options: [
+                        { text: '+3', isCorrect: true, exp: 'Абсолютно правильно! Флуор є найсильнішим неметалом і повністю відтягує електрони від Бору.' },
+                        { text: '-3', isCorrect: false, exp: 'Флуор нікому не віддає електрони, тому Бор не може мати негативного заряду.' },
+                        { text: '+1', isCorrect: false, exp: 'Бор утворив 3 зв’язки й віддав 3 електрони.' },
+                        { text: '0', isCorrect: false, exp: 'У сполуках з Флуором Бор завжди має заряд.' }
+                    ]
+                }
+            },
+            {
+                element: 'F',
+                name: 'Флуор (Fluorine)',
+                conf: '2s? 2p?',
+                valenceElectrons: 7,
+                targetMolecule: 'F2',
+                targetName: 'Фтор (Проста речовина)',
+                targetValence: 1,
+                hasExcitedState: false, // NO excited state
+                desc: 'Флуор має 7 валентних електронів. Побудуй його основний стан. Потім спробуй збудити його, щоб отримати вищу валентність (наприклад, III чи V). Зверни увагу на відсутність d-орбіталей на 2-му рівні.',
+                challenge: {
+                    q: 'Чому Флуор (F) ніколи не може перейти у збуджений стан і завжди виявляє лише Валентність I?',
+                    options: [
+                        { text: 'На другому енергетичному рівні немає d-орбіталей', isCorrect: true, exp: 'Геніально! Флуор — елемент 2-го періоду. На n=2 існують лише s- та p-підрівні. Немає порожніх комірок на цьому рівні для переходу.' },
+                        { text: 'Він є найменшим за розміром атомом', isCorrect: false, exp: 'Розмір впливає на силу тяжіння, але квантовий перехід блокується саме структурою орбіталей.' },
+                        { text: 'Флуор є благородним газом', isCorrect: false, exp: 'Флуор — це галоген, а не благородний газ.' },
+                        { text: 'Він утворює лише іонні зв’язки', isCorrect: false, exp: 'Ні, у молекулі F2 зв’язок ковалентний неполярний.' }
+                    ]
+                }
+            },
+            {
+                element: 'O',
+                name: 'Оксиген (Oxygen)',
+                conf: '2s? 2p?',
+                valenceElectrons: 6,
+                targetMolecule: 'H2O',
+                targetName: 'Вода',
+                targetValence: 2,
+                hasExcitedState: false, // NO excited state
+                desc: 'Оксиген має 6 валентних електронів. Побудуй його основний стан. Чи можна перевести його у збуджений стан для отримання валентності IV чи VI, як у Сульфуру?',
+                challenge: {
+                    q: 'Які ступені окиснення мають Оксиген та Гідроген у пероксиді водню H2O2?',
+                    options: [
+                        { text: 'O: -1, H: +1', isCorrect: true, exp: 'Правильно! Це класична пастка НМТ. У пероксидах зв’язок O-O ковалентний неполярний, тому Оксиген виявляє ступінь окиснення -1.' },
+                        { text: 'O: -2, H: +1', isCorrect: false, exp: 'Ні, -2 буває у воді, але в пероксидах ступінь окиснення Оксигену становить -1.' },
+                        { text: 'O: 0, H: 0', isCorrect: false, exp: 'Це складна сполука, заряди присутні.' },
+                        { text: 'O: +2, H: -1', isCorrect: false, exp: 'Гідроген більш електропозитивний за Оксиген, тому він має заряд +1.' }
+                    ]
+                }
+            },
+            {
+                element: 'N',
+                name: 'Нітроген (Nitrogen)',
+                conf: '2s? 2p?',
+                valenceElectrons: 5,
+                targetMolecule: 'HNO3',
+                targetName: 'Нітратна кислота',
+                targetValence: 3, // Ground state valence is 3
+                hasExcitedState: false, // NO excited state
+                desc: 'Розподіли 5 валентних електронів Нітрогену. Молекула HNO3 вимагає утворення 4 зв’язків від азоту (Валентність IV). Чи можна збудити Нітроген до валентності V?',
+                challenge: {
+                    q: 'Чому максимальна валентність Нітрогену дорівнює IV, хоча ступінь окиснення у HNO3 становить +5?',
+                    options: [
+                        { text: 'Через відсутність d-орбіталей на 2-му рівні (4-й зв’заок утворюється за донорно-акцепторним механізмом)', isCorrect: true, exp: 'Бездоганно! Нітроген не може утворити 5 зв’язків, бо не має де розпарувати електрони. Але він може віддати свою неподілену пару як донор, утворюючи 4-й ковалентний зв’язок.' },
+                        { text: 'Нітроген не може віддати всі 5 електронів', isCorrect: false, exp: 'Ступінь окиснення +5 показує, що всі 5 електронів зміщені, але зв’язків лише 4.' },
+                        { text: 'Оксиген заважає Нітрогену', isCorrect: false, exp: 'Ні, це внутрішнє квантове обмеження атома Нітрогену.' },
+                        { text: 'Через великий радіус ядра', isCorrect: false, exp: 'Ядро Нітрогену є дуже малим.' }
+                    ]
+                }
+            },
+            {
+                element: 'S',
+                name: 'Сульфур (Sulfur) - Стан I',
+                conf: '3s? 3p? 3d?',
+                valenceElectrons: 6,
+                targetMolecule: 'SO2',
+                targetName: 'Сірчистий газ',
+                targetValence: 4,
+                hasExcitedState: true,
+                desc: 'Сульфур — елемент 3-го періоду, тому на його зовнішньому рівні є вільні 3d-орбіталі! Розподіли 6 електронів у основному стані, а потім збуди його до Валентності IV для молекули SO2.',
+                challenge: {
+                    q: 'Яка валентність та ступінь окиснення Сульфуру в молекулі сірчистого газу (SO2)?',
+                    options: [
+                        { text: 'Валентність: IV, ступінь окиснення: +4', isCorrect: true, exp: 'Супер! Сульфур утворює 4 зв’язки, а Оксиген як сильніший окисник зміщує електрони, даючи сірці ступінь +4.' },
+                        { text: 'Валентність: II, ступінь окиснення: +4', isCorrect: false, exp: 'Ні. Валентність дорівнює кількості неспарених електронів (4).' },
+                        { text: 'Валентність: IV, ступінь окиснення: -4', isCorrect: false, exp: 'Сірка менш електронегативна за Оксиген, тому її заряд позитивний.' },
+                        { text: 'Валентність: VI, ступінь окиснення: +4', isCorrect: false, exp: 'Валентність VI буде у сполуці SO3, тут вона дорівнює IV.' }
+                    ]
+                }
+            },
+            {
+                element: 'S',
+                name: 'Сульфур (Sulfur) - Стан II',
+                conf: '3s? 3p? 3d?',
+                valenceElectrons: 6,
+                targetMolecule: 'SO3',
+                targetName: 'Сульфур триоксид',
+                targetValence: 6,
+                hasExcitedState: true,
+                desc: 'Тепер вичави максимум! Тобі потрібна Валентність VI для молекули SO3. Розподіли 6 електронів спочатку в основному стані, а потім здійсни переходи на 3d-рівень, щоб розпарувати абсолютно всі електрони.',
+                challenge: {
+                    q: 'Обчисліть ступінь окиснення Сульфуру в отриманому SO3:',
+                    options: [
+                        { text: '+6', isCorrect: true, exp: 'Правильно! Кожен із трьох атомів Оксигену забирає по 2 електрони від Сульфуру, даючи заряд сірки +6.' },
+                        { text: '-6', isCorrect: false, exp: 'Ні. Сульфур є електропозитивним порівняно з Оксигеном.' },
+                        { text: '+4', isCorrect: false, exp: 'Це заряд у молекулі SO2, а в SO3 він дорівнює +6.' },
+                        { text: '0', isCorrect: false, exp: 'Це складна сполука з великою різницею електронегативностей.' }
+                    ]
+                }
+            },
+            {
+                element: 'P',
+                name: 'Фосфор (Phosphorus)',
+                conf: '3s? 3p? 3d?',
+                valenceElectrons: 5,
+                targetMolecule: 'PCl5',
+                targetName: 'Фосфор хлорид',
+                targetValence: 5,
+                hasExcitedState: true,
+                desc: 'Фосфор в основному стані має валентність III. Склади конфігурацію 5 електронів спочатку в основному стані, а потім розпар 3s-пару на d-рівень, щоб отримати Валентність V.',
+                challenge: {
+                    q: 'Чому Фосфор утворює сполуку PCl5, а Нітроген не може утворити подібний NCl5?',
+                    options: [
+                        { text: 'У Фосфору є 3d-підрівень для розпаровування електронів', isCorrect: true, exp: 'Точно! Наявність вільного d-підрівня на 3-му рівні знімає обмеження і дозволяє Фосфору легко розширити валентність до V.' },
+                        { text: 'Фосфор є металом', isCorrect: false, exp: 'Ні. Фосфор — типовий неметал.' },
+                        { text: 'Нітроген занадто важкий', isCorrect: false, exp: 'Ядро Нітрогену значно легше за ядро Фосфору.' },
+                        { text: 'Через різну температуру кипіння елементів', isCorrect: false, exp: 'Фізичні властивості не впливають на квантову структуру орбіталей.' }
+                    ]
+                }
+            },
+            {
+                element: 'Cl',
+                name: 'Хлор (Chlorine)',
+                conf: '3s? 3p? 3d?',
+                valenceElectrons: 7,
+                targetMolecule: 'HClO4',
+                targetName: 'Перхлоратна кислота',
+                targetValence: 7,
+                hasExcitedState: true,
+                desc: 'Фінальна місія! Побудуй основний стан із 7 валентних електронів Хлору. Після цього розпар абсолютно всі пари на зовнішньому рівні, перенісши їх на 3d-рівень для отримання Валентності VII.',
+                challenge: {
+                    q: 'Визначте ступінь окиснення Хлору в перхлоратній кислоті HClO4:',
+                    options: [
+                        { text: '+7', isCorrect: true, exp: 'Блискучий фінал! Хлор задіяв усі свої 7 валентних електронів і отримав максимально позитивний заряд +7.' },
+                        { text: '-1', isCorrect: false, exp: 'Ні, -1 буває в соляній кислоті HCl, але не в кисневих кислотах.' },
+                        { text: '+5', isCorrect: false, exp: 'Це ступінь окиснення у хлоратній кислоті HClO₃.' },
+                        { text: '+1', isCorrect: false, exp: 'Це ступінь окиснення у гіпохлоритній кислоті HClO.' }
+                    ]
+                }
+            }
+        ];
+
+        let score = 0;
+        let currentMissionIdx = 0;
+        let bucket = 0; // Number of valence electrons remaining in hand
+        let currentS = [];
+        let currentP = [];
+        let currentD = [];
+        let currentStep = 'ground'; // 'ground', 'excited', 'finished'
+        let moleculesSynthesized = false;
+
+        function loadMission(idx) {
+            currentMissionIdx = idx;
+            const mission = missions[idx];
+            
+            const missionIndicator = document.getElementById('mission-indicator');
+            const missionTitle = document.getElementById('mission-title');
+            const missionDesc = document.getElementById('mission-desc');
+            const elementBadge = document.getElementById('element-badge');
+            const elementName = document.getElementById('element-name');
+            const elementConf = document.getElementById('element-conf');
+            const challengePanel = document.getElementById('challenge-panel');
+
+            // UI elements update
+            if (missionIndicator) missionIndicator.innerText = `${idx + 1} з 10`;
+            if (missionTitle) missionTitle.innerText = `${mission.targetMolecule} — ${mission.targetName}`;
+            if (missionDesc) missionDesc.innerText = mission.desc;
+            if (elementBadge) elementBadge.innerText = mission.element;
+            if (elementName) elementName.innerText = mission.name;
+            if (elementConf) elementConf.innerText = mission.conf;
+
+            // Empty board initialization
+            currentS = [''];
+            currentP = ['', '', ''];
+            currentD = (mission.element === 'S' || mission.element === 'P' || mission.element === 'Cl') ? ['', '', '', '', ''] : [];
+
+            bucket = mission.valenceElectrons;
+            currentStep = 'ground';
+            moleculesSynthesized = false;
+            if (challengePanel) challengePanel.classList.add('hidden');
+            
+            updateWorkspace();
+            renderCoreReactorWaiting();
+        }
+
+        function resetCurrentMission() {
+            loadMission(currentMissionIdx);
+            sfx.playJump();
+            showCustomTip("Робочу область очищено! Спробуй розподілити електрони знову.");
+        }
+
+        function updateWorkspace() {
+            const mission = missions[currentMissionIdx];
+            const sContainer = document.getElementById('s-orbitals-container');
+            const pContainer = document.getElementById('p-orbitals-container');
+            const dContainer = document.getElementById('d-orbitals-container');
+            const dRow = document.getElementById('d-level-row');
+
+            // Set labels dynamically based on period
+            const period = (mission.element === 'S' || mission.element === 'P' || mission.element === 'Cl') ? '3' : '2';
+            const sLabel = document.getElementById('s-level-label');
+            const pLabel = document.getElementById('p-level-label');
+            if (sLabel) sLabel.innerText = `${period}s-рівень`;
+            if (pLabel) pLabel.innerText = `${period}p-рівень`;
+
+            // Draw s-orbitals
+            if (sContainer) {
+                sContainer.innerHTML = '';
+                currentS.forEach((val, idx) => {
+                    sContainer.appendChild(createOrbitalElement('s', idx, val));
+                });
+            }
+
+            // Draw p-orbitals
+            if (pContainer) {
+                pContainer.innerHTML = '';
+                currentP.forEach((val, idx) => {
+                    pContainer.appendChild(createOrbitalElement('p', idx, val));
+                });
+            }
+
+            // Handle d-orbitals row visibility and population
+            if (dRow) {
+                if (currentD.length > 0) {
+                    dRow.classList.remove('hidden');
+                    if (dContainer) {
+                        dContainer.innerHTML = '';
+                        currentD.forEach((val, idx) => {
+                            dContainer.appendChild(createOrbitalElement('d', idx, val));
+                        });
+                    }
+                } else {
+                    dRow.classList.add('hidden');
+                }
+            }
+
+            // Update remaining electrons display
+            renderBucket();
+
+            // Render dynamic Action Button depending on current step
+            renderActionButtons();
+        }
+
+        function renderBucket() {
+            const container = document.getElementById('electron-bucket');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < bucket; i++) {
+                const dot = document.createElement('div');
+                dot.className = "w-3 h-3 rounded-full bg-indigo-600 animate-pulse";
+                container.appendChild(dot);
+            }
+            if (bucket === 0) {
+                container.innerHTML = `<span class="text-xs text-emerald-600 font-extrabold uppercase tracking-tight">Всі розподілено! 👍</span>`;
+            }
+        }
+
+        function createOrbitalElement(level, idx, val) {
+            const box = document.createElement('div');
+            box.className = "w-14 h-14 bg-white border-2 border-slate-300 rounded-xl flex items-center justify-center gap-1 text-xl font-bold cursor-pointer quantum-box relative shadow-sm";
+            
+            // Bind click interaction (active cycling)
+            box.onclick = () => cycleCell(level, idx);
+
+            // Represent spins beautifully
+            if (val === '↑↓') {
+                box.innerHTML = `<span class="text-indigo-600">↑</span><span class="text-orange-500">↓</span>`;
+            } else if (val === '↑') {
+                box.innerHTML = `<span class="text-indigo-600">↑</span>`;
+            } else {
+                box.innerHTML = `<span class="text-slate-200 text-[10px] uppercase font-bold tracking-tight select-none">порожня</span>`;
+            }
+
+            return box;
+        }
+
+        function cycleCell(level, idx) {
+            if (currentStep === 'finished') return;
+            sfx.init();
+            
+            let val = getCell(level, idx);
+            if (val === '') {
+                if (bucket > 0) {
+                    setCell(level, idx, '↑');
+                    bucket -= 1;
+                    sfx.playJump();
+                } else {
+                    sfx.playError();
+                    showCustomTip("У кошику немає вільних електронів! Зніми електрон з іншої комірки кліком.");
+                }
+            } else if (val === '↑') {
+                if (bucket > 0) {
+                    setCell(level, idx, '↑↓');
+                    bucket -= 1;
+                    sfx.playJump();
+                } else {
+                    // Cycle back to empty if no electrons left in bucket
+                    setCell(level, idx, '');
+                    bucket += 1;
+                    sfx.playJump();
+                }
+            } else if (val === '↑↓') {
+                setCell(level, idx, '');
+                bucket += 2;
+                sfx.playJump();
+            }
+            updateWorkspace();
+        }
+
+        function getCell(level, idx) {
+            if (level === 's') return currentS[idx];
+            if (level === 'p') return currentP[idx];
+            if (level === 'd') return currentD[idx];
+            return '';
+        }
+
+        function setCell(level, idx, value) {
+            if (level === 's') currentS[idx] = value;
+            if (level === 'p') currentP[idx] = value;
+            if (level === 'd') currentD[idx] = value;
+        }
+
+        function countUnpairedElectrons() {
+            let count = 0;
+            const checkList = [...currentS, ...currentP, ...currentD];
+            checkList.forEach(val => {
+                if (val === '↑') count++;
+            });
+            return count;
+        }
+
+        function renderActionButtons() {
+            const actionBtnContainer = document.getElementById('action-buttons-container');
+            if (!actionBtnContainer) return;
+            actionBtnContainer.innerHTML = '';
+
+            if (currentStep === 'ground') {
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-md transition-all cursor-pointer";
+                btn.innerText = "Перевірити основний стан 🔍";
+                btn.onclick = verifyGroundState;
+                actionBtnContainer.appendChild(btn);
+            } else if (currentStep === 'excited') {
+                const mission = missions[currentMissionIdx];
+                if (mission.hasExcitedState) {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-md transition-all cursor-pointer";
+                    btn.innerText = "Запустити Реактор 🧪";
+                    btn.onclick = verifyExcitedState;
+                    actionBtnContainer.appendChild(btn);
+                } else {
+                    // Elements without excited states (Oxygen, Fluorine, Nitrogen)
+                    const btnNo = document.createElement('button');
+                    btnNo.className = "flex-grow bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-md transition cursor-pointer";
+                    btnNo.innerText = "Збудження неможливе! 🚫";
+                    btnNo.onclick = () => handleNoExcitedState(true);
+                    
+                    const btnYes = document.createElement('button');
+                    btnYes.className = "bg-rose-500 hover:bg-rose-600 text-white text-xs font-extrabold py-3.5 px-4 rounded-xl shadow-md transition cursor-pointer";
+                    btnYes.innerText = "Спробувати збудження ⚡";
+                    btnYes.onclick = () => handleNoExcitedState(false);
+
+                    actionBtnContainer.appendChild(btnNo);
+                    actionBtnContainer.appendChild(btnYes);
+                }
+            } else {
+                // finished
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-slate-100 text-slate-400 font-extrabold py-3.5 px-6 rounded-2xl cursor-not-allowed";
+                btn.innerText = "Реактор активовано";
+                btn.disabled = true;
+                actionBtnContainer.appendChild(btn);
+            }
+        }
+
+        // GROUND STATE VALIDATOR (Active rules of quantum mechanics)
+        function verifyGroundState() {
+            const mission = missions[currentMissionIdx];
+            
+            // 1. Must use all electrons
+            if (bucket > 0) {
+                sfx.playError();
+                showCustomTip(`Помилка! Розподіли всі валентні електрони. У кошику залишилося ще ${bucket} e-.`);
+                return;
+            }
+
+            let numS = currentS.filter(c => c !== '').reduce((acc, c) => acc + (c === '↑↓' ? 2 : 1), 0);
+            let numP = currentP.filter(c => c !== '').reduce((acc, c) => acc + (c === '↑↓' ? 2 : 1), 0);
+            let numD = currentD.filter(c => c !== '').reduce((acc, c) => acc + (c === '↑↓' ? 2 : 1), 0);
+
+            // 2. Aufbau Principle check
+            if (numP > 0 && numS < 2) {
+                sfx.playError();
+                showCustomTip("Порушено принцип мінімальної енергії (Ауфбау)! Рівень s має нижчу енергію, ніж p. Його потрібно повністю заповнити (2 e-) перед заселенням p.");
+                return;
+            }
+            if (numD > 0) {
+                sfx.playError();
+                showCustomTip("Порушено принцип Ауфбау! Рівень d має набагато більшу енергію, ніж s та p. У основному стані d-орбіталі мають бути повністю порожніми.");
+                return;
+            }
+
+            // 3. Hund's Rule check for p subshell
+            let pSingles = currentP.filter(c => c === '↑').length;
+            let pDoubles = currentP.filter(c => c === '↑↓').length;
+            let expPSingles = numP <= 3 ? numP : 6 - numP;
+            let expPDoubles = numP <= 3 ? 0 : numP - 3;
+
+            if (pSingles !== expPSingles || pDoubles !== expPDoubles) {
+                sfx.playError();
+                showCustomTip("Порушено правило Гунда! Електрони на одному підрівні намагаються зайняти якомога більше вільних кімнат по одному, перш ніж утворювати пари.");
+                return;
+            }
+
+            // Ground State verified successfully!
+            sfx.playSuccess();
+            currentStep = 'excited';
+            
+            if (mission.hasExcitedState) {
+                showCustomTip(`Основний стан вірний! 🎉 Поточна валентність: ${countUnpairedElectrons()}. Тепер збуди атом: перерозподіли електрони на верстаку так, щоб отримати цільову валентність ${mission.targetValence} (рівно ${mission.targetValence} неспарених електронів!).`);
+            } else {
+                showCustomTip(`Основний стан вірний! 🎉 Але для молекули ${mission.targetMolecule} потрібна валентність ${mission.targetValence}. Чи може цей атом взагалі перейти у збуджений стан? Натисни відповідну кнопку праворуч.`);
+            }
+            updateWorkspace();
+        }
+
+        // EXCITED STATE VALIDATOR
+        function verifyExcitedState() {
+            const mission = missions[currentMissionIdx];
+            if (bucket > 0) {
+                sfx.playError();
+                showCustomTip(`Розподіли всі валентні електрони! У кошику залишилося ще ${bucket} e-.`);
+                return;
+            }
+
+            let unpaired = countUnpairedElectrons();
+            if (unpaired !== mission.targetValence) {
+                sfx.playError();
+                showCustomTip(`Неправильно! Для молекули ${mission.targetMolecule} потрібна валентність ${mission.targetValence} (тобто рівно ${mission.targetValence} неспарених електронів). Зараз у тебе: ${unpaired}.`);
+                return;
+            }
+
+            // Excited state confirmed
+            currentStep = 'finished';
+            runSynthesis();
+        }
+
+        function handleNoExcitedState(isCorrectGuess) {
+            const mission = missions[currentMissionIdx];
+            if (isCorrectGuess) {
+                currentStep = 'finished';
+                sfx.playSuccess();
+                showCustomTip(`Абсолютно правильно! На 2-му енергетичному рівні немає d-підрівня, тому розпаровування неможливе. Синтез запускається в основному стані.`);
+                runSynthesis();
+            } else {
+                sfx.playError();
+                showCustomTip(`Помилка! Спробуй самостійно розпар електрони на d-рівень. Бачиш d-рівень на верстаку? Ні, бо у ${mission.name} на 2-му рівні d-орбіталей не існує!`);
+            }
+        }
+
+        function runSynthesis() {
+            moleculesSynthesized = true;
+            sfx.playSuccess();
+            updateWorkspace();
+
+            const core = document.getElementById('reactor-core');
+            if (core) {
+                core.classList.add('flash-active');
+                setTimeout(() => core.classList.remove('flash-active'), 600);
+            }
+
+            renderCoreReactorFinished();
+            triggerNMTChallenge();
+        }
+
+        function renderCoreReactorWaiting() {
+            const coreGraphic = document.getElementById('molecule-graphic');
+            if (!coreGraphic) return;
+            coreGraphic.innerHTML = `
+                <div class="w-16 h-16 rounded-full bg-slate-800 border-4 border-dashed border-slate-700 flex items-center justify-center animate-spin">
+                    <span class="text-slate-500 text-xl font-bold">🧪</span>
+                </div>
+            `;
+        }
+
+        function renderCoreReactorFinished() {
+            const coreGraphic = document.getElementById('molecule-graphic');
+            if (!coreGraphic) return;
+            const mission = missions[currentMissionIdx];
+
+            // Render highly detailed chemical SVG assets dynamically
+            if (mission.targetMolecule === 'CH4') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="16" fill="#4f46e5" />
+                        <text x="60" y="65" font-family="sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">C</text>
+                        <line x1="60" y1="44" x2="60" y2="24" stroke="#4f46e5" stroke-width="4" stroke-dasharray="2 1" />
+                        <line x1="60" y1="76" x2="60" y2="96" stroke="#4f46e5" stroke-width="4" stroke-dasharray="2 1" />
+                        <line x1="44" y1="60" x2="24" y2="60" stroke="#4f46e5" stroke-width="4" stroke-dasharray="2 1" />
+                        <line x1="76" y1="60" x2="96" y2="60" stroke="#4f46e5" stroke-width="4" stroke-dasharray="2 1" />
+                        <circle cx="60" cy="20" r="10" fill="#cbd5e1" /> <text x="60" y="24" font-size="10" font-weight="bold" text-anchor="middle">H</text>
+                        <circle cx="60" cy="100" r="10" fill="#cbd5e1" /> <text x="60" y="104" font-size="10" font-weight="bold" text-anchor="middle">H</text>
+                        <circle cx="20" cy="60" r="10" fill="#cbd5e1" /> <text x="20" y="64" font-size="10" font-weight="bold" text-anchor="middle">H</text>
+                        <circle cx="100" cy="60" r="10" fill="#cbd5e1" /> <text x="100" y="64" font-size="10" font-weight="bold" text-anchor="middle">H</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'BeCl2') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="15" fill="#10b981" />
+                        <text x="60" y="64" font-family="sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Be</text>
+                        <line x1="45" y1="60" x2="25" y2="60" stroke="#10b981" stroke-width="3" />
+                        <line x1="75" y1="60" x2="95" y2="60" stroke="#10b981" stroke-width="3" />
+                        <circle cx="20" cy="60" r="9" fill="#f97316" /> <text x="20" y="63" font-size="9" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                        <circle cx="100" cy="60" r="9" fill="#f97316" /> <text x="100" y="63" font-size="9" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'BF3') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="15" fill="#ec4899" />
+                        <text x="60" y="64" font-family="sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">B</text>
+                        <line x1="60" y1="45" x2="60" y2="25" stroke="#ec4899" stroke-width="3" />
+                        <line x1="48" y1="68" x2="33" y2="83" stroke="#ec4899" stroke-width="3" />
+                        <line x1="72" y1="68" x2="87" y2="83" stroke="#ec4899" stroke-width="3" />
+                        <circle cx="60" cy="20" r="9" fill="#14b8a6" /> <text x="60" y="23" font-size="9" font-weight="bold" fill="white" text-anchor="middle">F</text>
+                        <circle cx="28" cy="85" r="9" fill="#14b8a6" /> <text x="28" y="88" font-size="9" font-weight="bold" fill="white" text-anchor="middle">F</text>
+                        <circle cx="92" cy="85" r="9" fill="#14b8a6" /> <text x="92" y="88" font-size="9" font-weight="bold" fill="white" text-anchor="middle">F</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'F2') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="45" cy="60" r="14" fill="#14b8a6" />
+                        <text x="45" y="63" font-size="10" font-weight="bold" fill="white" text-anchor="middle">F</text>
+                        <circle cx="75" cy="60" r="14" fill="#14b8a6" />
+                        <text x="75" y="63" font-size="10" font-weight="bold" fill="white" text-anchor="middle">F</text>
+                        <line x1="59" y1="60" x2="61" y2="60" stroke="#14b8a6" stroke-width="4" />
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'H2O') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="50" r="16" fill="#ef4444" />
+                        <text x="60" y="54" font-size="12" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <line x1="48" y1="58" x2="32" y2="78" stroke="#ef4444" stroke-width="3" />
+                        <line x1="72" y1="58" x2="88" y2="78" stroke="#ef4444" stroke-width="3" />
+                        <circle cx="26" cy="84" r="9" fill="#cbd5e1" /> <text x="26" y="87" font-size="9" font-weight="bold" text-anchor="middle">H</text>
+                        <circle cx="94" cy="84" r="9" fill="#cbd5e1" /> <text x="94" y="87" font-size="9" font-weight="bold" text-anchor="middle">H</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'SO2') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="50" r="16" fill="#f59e0b" />
+                        <text x="60" y="54" font-family="sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">S</text>
+                        <line x1="48" y1="58" x2="32" y2="78" stroke="#f59e0b" stroke-width="3" />
+                        <line x1="50" y1="61" x2="35" y2="81" stroke="#f59e0b" stroke-width="1" />
+                        <line x1="72" y1="58" x2="88" y2="78" stroke="#f59e0b" stroke-width="3" />
+                        <line x1="70" y1="61" x2="85" y2="81" stroke="#f59e0b" stroke-width="1" />
+                        <circle cx="26" cy="84" r="10" fill="#ef4444" /> <text x="26" y="87" font-size="9" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="94" cy="84" r="10" fill="#ef4444" /> <text x="94" y="87" font-size="9" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'SO3') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="16" fill="#f59e0b" />
+                        <text x="60" y="65" font-family="sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">S</text>
+                        <line x1="58" y1="44" x2="58" y2="28" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="62" y1="44" x2="62" y2="28" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="48" y1="68" x2="32" y2="84" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="51" y1="71" x2="35" y2="87" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="72" y1="68" x2="88" y2="84" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="69" y1="71" x2="85" y2="87" stroke="#f59e0b" stroke-width="2" />
+                        <circle cx="60" cy="20" r="10" fill="#ef4444" /> <text x="60" y="24" font-size="10" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="28" cy="88" r="10" fill="#ef4444" /> <text x="28" y="92" font-size="10" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="92" cy="88" r="10" fill="#ef4444" /> <text x="92" y="92" font-size="10" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'PCl5') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="15" fill="#f59e0b" />
+                        <text x="60" y="64" font-size="12" font-weight="bold" fill="white" text-anchor="middle">P</text>
+                        <line x1="60" y1="45" x2="60" y2="25" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="60" y1="75" x2="60" y2="95" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="45" y1="60" x2="25" y2="60" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="75" y1="60" x2="95" y2="60" stroke="#f59e0b" stroke-width="2" />
+                        <line x1="48" y1="48" x2="34" y2="34" stroke="#f59e0b" stroke-width="2" />
+                        <circle cx="60" cy="20" r="8" fill="#f97316" /> <text x="60" y="23" font-size="8" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                        <circle cx="60" cy="100" r="8" fill="#f97316" /> <text x="60" y="103" font-size="8" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                        <circle cx="20" cy="60" r="8" fill="#f97316" /> <text x="20" y="63" font-size="8" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                        <circle cx="100" cy="60" r="8" fill="#f97316" /> <text x="100" y="63" font-size="8" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                        <circle cx="30" cy="30" r="8" fill="#f97316" /> <text x="30" y="33" font-size="8" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'HNO3') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="14" fill="#a855f7" />
+                        <text x="60" y="64" font-size="10" font-weight="bold" fill="white" text-anchor="middle">N</text>
+                        <line x1="60" y1="46" x2="60" y2="28" stroke="#a855f7" stroke-width="2" />
+                        <line x1="62" y1="46" x2="62" y2="28" stroke="#a855f7" stroke-width="2" />
+                        <line x1="46" y1="60" x2="28" y2="60" stroke="#a855f7" stroke-width="2" />
+                        <line x1="72" y1="68" x2="90" y2="82" stroke="#ec4899" stroke-width="2" stroke-dasharray="2 1" />
+                        <circle cx="60" cy="20" r="9" fill="#ef4444" /> <text x="60" y="23" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="20" cy="60" r="9" fill="#ef4444" /> <text x="20" y="63" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="94" cy="85" r="9" fill="#ef4444" /> <text x="94" y="88" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <line x1="12" y1="68" x2="4" y2="76" stroke="#ef4444" stroke-width="2" />
+                        <circle cx="4" cy="78" r="7" fill="#cbd5e1" /> <text x="4" y="81" font-size="7" font-weight="bold" text-anchor="middle">H</text>
+                    </svg>
+                `;
+            } else if (mission.targetMolecule === 'HClO4') {
+                coreGraphic.innerHTML = `
+                    <svg class="w-32 h-32" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="15" fill="#f59e0b" />
+                        <text x="60" y="64" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Cl</text>
+                        <line x1="60" y1="44" x2="60" y2="25" stroke="#ef4444" stroke-width="3" />
+                        <line x1="60" y1="76" x2="60" y2="95" stroke="#ef4444" stroke-width="3" />
+                        <line x1="44" y1="60" x2="25" y2="60" stroke="#ef4444" stroke-width="3" />
+                        <line x1="76" y1="60" x2="95" y2="60" stroke="#ef4444" stroke-width="3" />
+                        <circle cx="60" cy="20" r="9" fill="#ef4444" /> <text x="60" y="23" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="60" cy="100" r="9" fill="#ef4444" /> <text x="60" y="103" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="20" cy="60" r="9" fill="#ef4444" /> <text x="20" y="63" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <circle cx="100" cy="60" r="9" fill="#ef4444" /> <text x="100" y="63" font-size="8" font-weight="bold" fill="white" text-anchor="middle">O</text>
+                        <line x1="10" y1="60" x2="2" y2="60" stroke="#cbd5e1" stroke-width="2" />
+                        <circle cx="2" cy="60" r="6" fill="#cbd5e1" /> <text x="2" y="63" font-size="6" font-weight="bold" text-anchor="middle">H</text>
+                    </svg>
+                `;
+            }
+
+            document.getElementById('reactor-status-text').innerHTML = `Синтез завершено! Молекула ${mission.targetMolecule} стабільна.`;
+            document.getElementById('reactor-status-text').className = "text-emerald-500 text-xs font-black mt-4 z-10 text-center";
+        }
+
+        function triggerNMTChallenge() {
+            const mission = missions[currentMissionIdx];
+            const challengeQuestion = document.getElementById('challenge-question');
+            const challengePanel = document.getElementById('challenge-panel');
+            const challengeOptions = document.getElementById('challenge-options');
+
+            if (challengeQuestion) challengeQuestion.innerText = mission.challenge.q;
+            if (challengeOptions) {
+                challengeOptions.innerHTML = '';
+                mission.challenge.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "bg-slate-50 hover:bg-amber-50 border border-slate-200 hover:border-amber-400 text-slate-800 text-xs font-extrabold p-3.5 rounded-xl transition text-left dyslexia-line w-full";
+                    btn.innerText = opt.text;
+                    btn.onclick = () => submitChallengeAnswer(opt);
+                    challengeOptions.appendChild(btn);
+                });
+            }
+
+            if (challengePanel) {
+                challengePanel.classList.remove('hidden');
+                challengePanel.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function submitChallengeAnswer(option) {
+            if (option.isCorrect) {
+                score += 25;
+                const scoreDisplay = document.getElementById('score-display');
+                if (scoreDisplay) scoreDisplay.innerText = `${score} ★`;
+                sfx.playSuccess();
+                showModal("🎉 Абсолютно вірно!", option.exp);
+            } else {
+                sfx.playError();
+                showModal("💡 Не зовсім так...", option.exp);
+            }
+        }
+
+        function showModal(title, text) {
+            const feedbackModal = document.getElementById('global-feedback-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-text');
+            const modalEmoji = document.getElementById('modal-emoji');
+
+            if (modalTitle) modalTitle.innerText = title;
+            if (modalText) modalText.innerText = text;
+            if (modalEmoji) modalEmoji.innerText = title.includes("вірно") ? "🏆" : "🔬";
+            if (feedbackModal) feedbackModal.classList.remove('hidden');
+        }
+
+        function nextStep() {
+            const feedbackModal = document.getElementById('global-feedback-modal');
+            if (feedbackModal) feedbackModal.classList.add('hidden');
+            if (currentMissionIdx < missions.length - 1) {
+                loadMission(currentMissionIdx + 1);
+            } else {
+                showFinalScreen();
+            }
+        }
+
+        function showFinalScreen() {
+            const missionCard = document.getElementById('mission-card');
+            const orbitalWorkbench = document.getElementById('orbital-workbench');
+            const elementName = document.getElementById('element-name');
+            const elementConf = document.getElementById('element-conf');
+            const core = document.getElementById('reactor-core');
+            const reactorStatusText = document.getElementById('reactor-status-text');
+
+            if (missionCard) missionCard.classList.add('hidden');
+            if (orbitalWorkbench) orbitalWorkbench.classList.add('hidden');
+            if (elementName) elementName.innerText = "Курс завершено!";
+            if (elementConf) elementConf.innerText = "Всі 10 квантових місій виконано!";
+            
+            if (core) {
+                core.innerHTML = `
+                    <div class="text-center space-y-3 z-10">
+                        <span class="text-6xl block animate-bounce">👑</span>
+                        <h3 class="text-xl font-extrabold text-emerald-400">Гранд-майстер Валентності</h3>
+                        <p class="text-xs text-slate-300 max-w-xs mx-auto dyslexia-line">Твій аналітичний інтелект подолав найскладніші пастки та аномалії будови атома для НМТ!</p>
+                    </div>
+                `;
+            }
+            if (reactorStatusText) {
+                reactorStatusText.innerHTML = `Квантовий рахунок: ${score} ★`;
+                reactorStatusText.className = "text-amber-400 text-sm font-black mt-4 z-10 text-center";
+            }
+        }
+
+        function showCustomTip(text) {
+            const tip = document.getElementById('workbench-tip');
+            if (tip) tip.innerText = text;
+        }
+
+        function restartGame() {
+            score = 0;
+            const scoreDisplay = document.getElementById('score-display');
+            if (scoreDisplay) scoreDisplay.innerText = "0 ★";
+            
+            const missionCard = document.getElementById('mission-card');
+            const orbitalWorkbench = document.getElementById('orbital-workbench');
+            if (missionCard) missionCard.classList.remove('hidden');
+            if (orbitalWorkbench) orbitalWorkbench.classList.remove('hidden');
+            
+            loadMission(0);
+        }
+
+        // Global bindings for final restarts & actions
+        window.nextStep = nextStep;
+        window.resetCurrentMission = resetCurrentMission;
+        window.restartGame = restartGame;
+
+        // Auto initialization on load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMission(0);
+        });
+    </script>
+</body>
+</html>
+```
+eof
+
+Спробуйте натиснути кнопку **Preview** на панелі праворуч, щоб запустити оновлену версію! Напишіть, якщо все відображається чудово.
